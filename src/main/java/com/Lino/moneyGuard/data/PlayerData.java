@@ -24,7 +24,7 @@ public class PlayerData {
         this.banExpiry = 0;
     }
 
-    public void addTransaction(transaction) {
+    public void addTransaction(Transaction transaction) {
         transactions.add(transaction);
 
         if (transaction.getType() == Transaction.Type.GAIN) {
