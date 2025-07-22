@@ -2,6 +2,7 @@ package com.Lino.moneyGuard;
 
 import com.Lino.moneyGuard.commands.MoneyGuardCommand;
 import com.Lino.moneyGuard.listeners.PlayerJoinListener;
+import com.Lino.moneyGuard.listeners.PlayerTransactionListener;
 import com.Lino.moneyGuard.managers.*;
 import com.Lino.moneyGuard.tasks.EconomyCheckTask;
 import net.milkbowl.vault.economy.Economy;
@@ -16,7 +17,6 @@ public class MoneyGuard extends JavaPlugin {
     private MessageManager messageManager;
     private EconomyManager economyManager;
     private DataManager dataManager;
-    private GuiManager guiManager;
     private AlertManager alertManager;
     private ActionManager actionManager;
     private LogManager logManager;
@@ -64,7 +64,6 @@ public class MoneyGuard extends JavaPlugin {
         messageManager = new MessageManager(this);
         economyManager = new EconomyManager(this);
         dataManager = new DataManager(this);
-        guiManager = new GuiManager(this);
         alertManager = new AlertManager(this);
         actionManager = new ActionManager(this);
         logManager = new LogManager(this);
@@ -77,7 +76,6 @@ public class MoneyGuard extends JavaPlugin {
     private void registerListeners() {
         getServer().getPluginManager().registerEvents(new PlayerTransactionListener(this), this);
         getServer().getPluginManager().registerEvents(new PlayerJoinListener(this), this);
-        getServer().getPluginManager().registerEvents(guiManager, this);
     }
 
     private void registerCommands() {
@@ -122,10 +120,6 @@ public class MoneyGuard extends JavaPlugin {
 
     public DataManager getDataManager() {
         return dataManager;
-    }
-
-    public GuiManager getGuiManager() {
-        return guiManager;
     }
 
     public AlertManager getAlertManager() {

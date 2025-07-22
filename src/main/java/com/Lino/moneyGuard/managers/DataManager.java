@@ -42,8 +42,6 @@ public class DataManager {
                 PlayerData data = new PlayerData(uuid);
 
                 String path = "players." + uuidString + ".";
-                data.setWarnings(dataConfig.getInt(path + "warnings", 0));
-                data.setMoneyGainedToday(dataConfig.getDouble(path + "money-gained-today", 0.0));
 
                 if (dataConfig.getBoolean(path + "banned", false)) {
                     long banExpiry = dataConfig.getLong(path + "ban-expiry", 0);
@@ -72,8 +70,6 @@ public class DataManager {
     private void savePlayerData(UUID uuid, PlayerData data) {
         String path = "players." + uuid.toString() + ".";
 
-        dataConfig.set(path + "warnings", data.getWarnings());
-        dataConfig.set(path + "money-gained-today", data.getMoneyGainedToday());
         dataConfig.set(path + "banned", data.isBanned());
 
         if (data.isBanned()) {
@@ -90,13 +86,9 @@ public class DataManager {
         dataConfig.set("players." + uuid.toString(), null);
     }
 
-    public Map<UUID, PlayerData> getAllPlayerData() {
-        return new ConcurrentHashMap<>(playerDataMap);
-    }
-
-    public void resetAllDailyStats() {
+    public void clearAll5MinuteData() {
         for (PlayerData data : playerDataMap.values()) {
-            data.resetDailyStats();
+            data.clearTransactions();
         }
     }
 }

@@ -4,11 +4,12 @@ prefix: "&6[MoneyGuard] &r"
 
 alerts:
   suspicious-transaction: "{prefix}&c&lSUSPICIOUS! &e{player} &7received &a${amount} &7({type})"
-  max-money-hour: "{prefix}&c{player} &7has gained &e${gained} &7in the last hour (Limit: &e${limit}&7)"
-  max-money-day: "{prefix}&c{player} &7has gained &e${gained} &7today (Limit: &e${limit}&7)"
-  max-total-money: "{prefix}&c{player} &7has &e${balance} &7total (Limit: &e${limit}&7)"
-  player-warned: "{prefix}&e{player} &7has been warned (&c{warnings}/{max}&7)"
-  player-banned: "{prefix}&c{player} &7has been banned for: &e{reason}"
+  max-money-minute: "{prefix}&c{player} &7has gained &e${gained} &7in the last minute (Limit: &e${limit}&7)"
+
+reports:
+  header: "&6========== &e5 Minute Suspicious Report &6=========="
+  player-entry: "&e{player}: &7{count} transactions totaling &a${total}"
+  footer: "&6============================================"
 
 warnings:
   player-warning: "{prefix}&cWarning! &7You have been warned for: &e{reason} &7(Warnings: &c{warnings}/{max}&7)"
@@ -19,10 +20,10 @@ ban:
 commands:
   reload-success: "{prefix}&aConfiguration reloaded successfully!"
   check-usage: "{prefix}&7Usage: &e/mg check <player>"
-  warn-usage: "{prefix}&7Usage: &e/mg warn <player> <reason>"
-  reset-usage: "{prefix}&7Usage: &e/mg reset <player>"
-  warn-success: "{prefix}&aSuccessfully warned &e{player}"
-  reset-success: "{prefix}&aReset warnings for &e{player}"
+  ban-usage: "{prefix}&7Usage: &e/mg ban <player> <reason>"
+  unban-usage: "{prefix}&7Usage: &e/mg unban <player>"
+  ban-success: "{prefix}&aBanned &e{player}"
+  unban-success: "{prefix}&aUnbanned &e{player}"
 
 errors:
   no-permission: "{prefix}&cYou don't have permission to use this command!"
@@ -31,26 +32,17 @@ errors:
 
 help:
   header: "&6========== &eMoneyGuard Help &6=========="
-  admin: "&e/mg &7- Open the GUI control panel"
+  reload: "&e/mg reload &7- Reload the configuration"
   check: "&e/mg check <player> &7- Check player statistics"
-  warn: "&e/mg warn <player> <reason> &7- Warn a player"
-  reset: "&e/mg reset <player> &7- Reset player warnings"
+  ban: "&e/mg ban <player> <reason> &7- Ban a player"
+  unban: "&e/mg unban <player> &7- Unban a player"
   help: "&e/mg help &7- Show this help message"
 
 info:
   header: "&6===== &ePlayer Info: &a{player} &6====="
   balance: "&7Current Balance: &a${amount}"
-  gained-hour: "&7Gained (Hour): &e${amount}"
-  gained-day: "&7Gained (Day): &e${amount}"
-  warnings: "&7Warnings: &c{count}"
-
-gui:
-  settings-command: "{prefix}&7Please edit the config.yml file to change settings"
-  warnings-command: "{prefix}&7Use &e/mg warn <player> <reason> &7to warn players"
-  reports-command: "{prefix}&7Check the moneyguard.log file for detailed reports"
-  warned-player: "{prefix}&aWarned &e{player}"
-  reset-warnings: "{prefix}&aReset warnings for &e{player}"
-  banned-player: "{prefix}&aBanned &e{player}"
+  gained-minute: "&7Gained (1 min): &e${amount}"
+  gained-5min: "&7Gained (5 min): &e${amount}"
 
 admin:
   pending-warnings: "{prefix}&e{count} players have active warnings"

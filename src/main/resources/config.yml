@@ -1,30 +1,18 @@
 # MoneyGuard Configuration
 
 limits:
-  # Maximum money a player can earn per hour
-  max-money-per-hour: 10000.0
-
-  # Maximum money a player can earn per day
-  max-money-per-day: 100000.0
-
-  # Maximum total money a player can have
-  max-total-money: 1000000.0
+  # Maximum money a player can earn per minute
+  max-money-per-minute: 10000.0
 
   # Transaction amount that triggers a suspicious alert
   suspicious-transaction: 50000.0
 
 monitoring:
   # Check interval in seconds
-  check-interval-seconds: 60
+  check-interval-seconds: 1
 
-  # Automatically warn players when limits are exceeded
-  auto-warn: true
-
-  # Automatically ban players after warnings threshold
-  auto-ban: false
-
-  # Number of warnings before auto-ban
-  warnings-before-ban: 3
+  # Number of players to scan per check
+  players-per-scan: 3
 
   # Ban duration in minutes
   ban-duration-minutes: 1440
@@ -32,10 +20,3 @@ monitoring:
 logging:
   # Enable file logging
   log-to-file: true
-
-reset:
-  # Reset daily statistics
-  daily-stats: true
-
-  # Hour to reset (0-23)
-  hour: 0

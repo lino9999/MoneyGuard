@@ -1,45 +1,85 @@
 package com.Lino.moneyGuard.tasks;
 
 import com.Lino.moneyGuard.MoneyGuard;
+import com.Lino.moneyGuard.data.Transaction;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.Calendar;
+import java.util.*;
 
 public class EconomyCheckTask extends BukkitRunnable {
 
     private final MoneyGuard plugin;
-    private int lastResetHour = -1;
+    private int tickCounter = 0;
+    private final Queue<Player> playerQueue;
 
     public EconomyCheckTask(MoneyGuard plugin) {
         this.plugin = plugin;
+        this.playerQueue = new LinkedList<>();
     }
 
     @Override
     public void run() {
-        checkDailyReset();
+        Collection<? extends Player> onlinePlayers = Bukkit.getOnlinePlayers();
 
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            if (player.hasPermission("moneyguard.bypass")) continue;
+        if (playerQueue.isEmpty()) {
+            playerQueue.addAll(onlinePlayers);
+        }
 
-            plugin.getEconomyManager().checkBalanceChange(player);
-            plugin.getActionManager().checkViolations(player);
+        int playersToScan = Math.min(plugin.getConfigManager().getPlayersPerScan(), playerQueue.size());
+
+        for (int i = 0; i < playersToScan; i++) {
+            Player player = playerQueue.poll();
+            if (player == null || !player.isOnline()) continue;
+
+            if (!player.hasPermission("moneyguard.bypass")) {
+                plugin.getEconomyManager().checkBalanceChange(player);
+
+                double gainedMinute = plugin.getEconomyManager().getMoneyGainedInLastMinute(player.getUniqueId());
+                double limitMinute = plugin.getConfigManager().getMaxMoneyPerMinute();
+
+                if (gainedMinute > limitMinute) {
+                    plugin.getAlertManager().alertMaxMoneyPerMinute(player, gainedMinute, limitMinute);
+                }
+            }
+        }
+
+        tickCounter++;
+        if (tickCounter >= 300) {
+            sendSuspiciousReport();
+            plugin.getEconomyManager().clearAllCaches();
+            plugin.getDataManager().clearAll5MinuteData();
+            plugin.getAlertManager().clearAlertCooldowns();
+            tickCounter = 0;
         }
     }
 
-    private void checkDailyReset() {
-        if (!plugin.getConfigManager().isResetDailyStats()) return;
+    private void sendSuspiciousReport() {
+        Map<UUID, List<Transaction>> suspicious = plugin.getEconomyManager().getSuspiciousTransactionsLast5Minutes();
 
-        Calendar cal = Calendar.getInstance();
-        int currentHour = cal.get(Calendar.HOUR_OF_DAY);
+        if (suspicious.isEmpty()) {
+            return;
+        }
 
-        if (currentHour == plugin.getConfigManager().getResetHour() && currentHour != lastResetHour) {
-            plugin.getDataManager().resetAllDailyStats();
-            plugin.getDataManager().saveAllData();
-            lastResetHour = currentHour;
+        String header = plugin.getMessageManager().getMessage("reports.header");
+        for (Player admin : Bukkit.getOnlinePlayers()) {
+            if (admin.hasPermission("moneyguard.alerts")) {
+                admin.sendMessage(header);
 
-            plugin.getLogger().info("Daily statistics have been reset");
+                for (Map.Entry<UUID, List<Transaction>> entry : suspicious.entrySet()) {
+                    Player player = Bukkit.getPlayer(entry.getKey());
+                    if (player != null) {
+                        double total = entry.getValue().stream().mapToDouble(Transaction::getAmount).sum();
+                        admin.sendMessage(plugin.getMessageManager().getMessage("reports.player-entry",
+                                "{player}", player.getName(),
+                                "{count}", String.valueOf(entry.getValue().size()),
+                                "{total}", String.format("%.2f", total)));
+                    }
+                }
+
+                admin.sendMessage(plugin.getMessageManager().getMessage("reports.footer"));
+            }
         }
     }
 }

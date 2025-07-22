@@ -26,17 +26,5 @@ public class PlayerJoinListener implements Listener {
         }
 
         plugin.getEconomyManager().checkBalanceChange(player);
-
-        if (player.hasPermission("moneyguard.admin")) {
-            int warnings = 0;
-            for (PlayerData pd : plugin.getDataManager().getAllPlayerData().values()) {
-                if (pd.getWarnings() > 0) warnings++;
-            }
-
-            if (warnings > 0) {
-                player.sendMessage(plugin.getMessageManager().getMessage("admin.pending-warnings",
-                        "{count}", String.valueOf(warnings)));
-            }
-        }
     }
 }

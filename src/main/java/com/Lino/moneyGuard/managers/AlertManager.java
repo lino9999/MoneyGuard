@@ -13,14 +13,18 @@ import java.util.UUID;
 public class AlertManager {
 
     private final MoneyGuard plugin;
-    private final Set<UUID> recentAlerts;
+    private final Set<UUID> alertedPlayers;
 
     public AlertManager(MoneyGuard plugin) {
         this.plugin = plugin;
-        this.recentAlerts = new HashSet<>();
+        this.alertedPlayers = new HashSet<>();
     }
 
     public void alertSuspiciousTransaction(Player player, double amount, Transaction.Type type) {
+        if (alertedPlayers.contains(player.getUniqueId())) {
+            return;
+        }
+
         String message = plugin.getMessageManager().getMessage("alerts.suspicious-transaction",
                 "{player}", player.getName(),
                 "{amount}", String.format("%.2f", amount),
@@ -28,53 +32,26 @@ public class AlertManager {
 
         notifyAdmins(message, Sound.BLOCK_BELL_RESONATE);
         plugin.getLogManager().logTransaction(player, amount, type, "SUSPICIOUS");
+        alertedPlayers.add(player.getUniqueId());
     }
 
-    public void alertMaxMoneyPerHour(Player player, double gained, double limit) {
-        if (hasRecentAlert(player.getUniqueId())) return;
+    public void alertMaxMoneyPerMinute(Player player, double gained, double limit) {
+        if (alertedPlayers.contains(player.getUniqueId())) {
+            return;
+        }
 
-        String message = plugin.getMessageManager().getMessage("alerts.max-money-hour",
+        String message = plugin.getMessageManager().getMessage("alerts.max-money-minute",
                 "{player}", player.getName(),
                 "{gained}", String.format("%.2f", gained),
                 "{limit}", String.format("%.2f", limit));
 
         notifyAdmins(message, Sound.ENTITY_VILLAGER_NO);
-        addRecentAlert(player.getUniqueId());
+        plugin.getLogManager().logTransaction(player, gained, Transaction.Type.GAIN, "EXCEEDED_MINUTE_LIMIT");
+        alertedPlayers.add(player.getUniqueId());
     }
 
-    public void alertMaxMoneyPerDay(Player player, double gained, double limit) {
-        String message = plugin.getMessageManager().getMessage("alerts.max-money-day",
-                "{player}", player.getName(),
-                "{gained}", String.format("%.2f", gained),
-                "{limit}", String.format("%.2f", limit));
-
-        notifyAdmins(message, Sound.ENTITY_VILLAGER_NO);
-    }
-
-    public void alertMaxTotalMoney(Player player, double balance, double limit) {
-        String message = plugin.getMessageManager().getMessage("alerts.max-total-money",
-                "{player}", player.getName(),
-                "{balance}", String.format("%.2f", balance),
-                "{limit}", String.format("%.2f", limit));
-
-        notifyAdmins(message, Sound.ENTITY_ENDER_DRAGON_GROWL);
-    }
-
-    public void alertPlayerWarned(Player player, int warnings, int maxWarnings) {
-        String message = plugin.getMessageManager().getMessage("alerts.player-warned",
-                "{player}", player.getName(),
-                "{warnings}", String.valueOf(warnings),
-                "{max}", String.valueOf(maxWarnings));
-
-        notifyAdmins(message, Sound.BLOCK_NOTE_BLOCK_BASS);
-    }
-
-    public void alertPlayerBanned(Player player, String reason) {
-        String message = plugin.getMessageManager().getMessage("alerts.player-banned",
-                "{player}", player.getName(),
-                "{reason}", reason);
-
-        notifyAdmins(message, Sound.ENTITY_WITHER_SPAWN);
+    public void clearAlertCooldowns() {
+        alertedPlayers.clear();
     }
 
     private void notifyAdmins(String message, Sound sound) {
@@ -86,17 +63,5 @@ public class AlertManager {
         }
 
         Bukkit.getConsoleSender().sendMessage(message);
-    }
-
-    private boolean hasRecentAlert(UUID uuid) {
-        return recentAlerts.contains(uuid);
-    }
-
-    private void addRecentAlert(UUID uuid) {
-        recentAlerts.add(uuid);
-
-        Bukkit.getScheduler().runTaskLater(plugin, () -> {
-            recentAlerts.remove(uuid);
-        }, 1200L);
     }
 }

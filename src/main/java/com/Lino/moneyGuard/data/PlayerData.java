@@ -6,56 +6,26 @@ public class PlayerData {
 
     private final UUID uuid;
     private final List<Transaction> transactions;
-    private int warnings;
-    private long lastWarning;
-    private long lastReset;
-    private double moneyGainedToday;
     private boolean isBanned;
     private long banExpiry;
 
     public PlayerData(UUID uuid) {
         this.uuid = uuid;
         this.transactions = new ArrayList<>();
-        this.warnings = 0;
-        this.lastWarning = 0;
-        this.lastReset = System.currentTimeMillis();
-        this.moneyGainedToday = 0;
         this.isBanned = false;
         this.banExpiry = 0;
     }
 
     public void addTransaction(Transaction transaction) {
+        if (transaction.getType() != Transaction.Type.GAIN) {
+            return;
+        }
+
         transactions.add(transaction);
 
-        if (transaction.getType() == Transaction.Type.GAIN) {
-            moneyGainedToday += transaction.getAmount();
-        }
-
-        if (transactions.size() > 1000) {
+        if (transactions.size() > 100) {
             transactions.remove(0);
         }
-    }
-
-    public void addWarning() {
-        warnings++;
-        lastWarning = System.currentTimeMillis();
-    }
-
-    public void resetDailyStats() {
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.HOUR_OF_DAY, 0);
-        cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MILLISECOND, 0);
-
-        long todayStart = cal.getTimeInMillis();
-
-        moneyGainedToday = transactions.stream()
-                .filter(t -> t.getType() == Transaction.Type.GAIN && t.getTimestamp() >= todayStart)
-                .mapToDouble(Transaction::getAmount)
-                .sum();
-
-        lastReset = System.currentTimeMillis();
     }
 
     public void ban(long duration) {
@@ -76,24 +46,16 @@ public class PlayerData {
         return false;
     }
 
+    public void clearTransactions() {
+        transactions.clear();
+    }
+
     public UUID getUuid() {
         return uuid;
     }
 
     public List<Transaction> getTransactions() {
         return new ArrayList<>(transactions);
-    }
-
-    public int getWarnings() {
-        return warnings;
-    }
-
-    public long getLastWarning() {
-        return lastWarning;
-    }
-
-    public double getMoneyGainedToday() {
-        return moneyGainedToday;
     }
 
     public boolean isBanned() {
@@ -104,11 +66,19 @@ public class PlayerData {
         return banExpiry;
     }
 
-    public void setWarnings(int warnings) {
-        this.warnings = warnings;
+    public double getMoneyGainedLast5Minutes() {
+        long fiveMinutesAgo = System.currentTimeMillis() - 300000;
+        return transactions.stream()
+                .filter(t -> t.getType() == Transaction.Type.GAIN && t.getTimestamp() > fiveMinutesAgo)
+                .mapToDouble(Transaction::getAmount)
+                .sum();
     }
 
-    public void setMoneyGainedToday(double amount) {
-        this.moneyGainedToday = amount;
+    public double getMoneyGainedLastMinute() {
+        long oneMinuteAgo = System.currentTimeMillis() - 60000;
+        return transactions.stream()
+                .filter(t -> t.getType() == Transaction.Type.GAIN && t.getTimestamp() > oneMinuteAgo)
+                .mapToDouble(Transaction::getAmount)
+                .sum();
     }
 }

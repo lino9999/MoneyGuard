@@ -9,12 +9,12 @@ depend: [Vault]
 commands:
   moneyguard:
     description: Main MoneyGuard command
-    usage: /<command> [reload|check|warn|reset|help]
+    usage: /<command> [reload|check|ban|unban|help]
     permission: moneyguard.use
     aliases: [mg]
   mg:
     description: MoneyGuard alias
-    usage: /<command> [reload|check|warn|reset|help]
+    usage: /<command> [reload|check|ban|unban|help]
     permission: moneyguard.use
 
 permissions:
@@ -28,28 +28,26 @@ permissions:
       moneyguard.use: true
       moneyguard.reload: true
       moneyguard.check: true
-      moneyguard.warn: true
-      moneyguard.reset: true
+      moneyguard.ban: true
       moneyguard.alerts: true
-      moneyguard.gui: true
   moneyguard.reload:
     description: Reload the plugin configuration
     default: op
   moneyguard.check:
     description: Check player money statistics
     default: op
+  moneyguard.ban:
+    description: Ban and unban players
+    default: op
+  moneyguard.alerts:
+    description: Receive economy alerts
+    default: op
+  moneyguard.bypass:
+    description: Bypass all economy checks
+    default: false
   moneyguard.warn:
     description: Warn players for violations
     default: op
   moneyguard.reset:
     description: Reset player warnings
     default: op
-  moneyguard.alerts:
-    description: Receive economy alerts
-    default: op
-  moneyguard.gui:
-    description: Access the GUI interface
-    default: op
-  moneyguard.bypass:
-    description: Bypass all economy checks
-    default: false

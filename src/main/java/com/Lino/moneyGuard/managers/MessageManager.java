@@ -18,6 +18,7 @@ public class MessageManager {
     private FileConfiguration messagesConfig;
     private File messagesFile;
     private final Map<String, String> cachedMessages;
+    private String prefix;
 
     public MessageManager(MoneyGuard plugin) {
         this.plugin = plugin;
@@ -39,14 +40,20 @@ public class MessageManager {
             messagesConfig.setDefaults(defConfig);
         }
 
+        // Load prefix separately
+        prefix = colorize(messagesConfig.getString("prefix", "&6[MoneyGuard] &r"));
+
         cacheMessages();
     }
 
     private void cacheMessages() {
         cachedMessages.clear();
         for (String key : messagesConfig.getKeys(true)) {
-            if (!messagesConfig.isConfigurationSection(key)) {
-                cachedMessages.put(key, colorize(messagesConfig.getString(key)));
+            if (!messagesConfig.isConfigurationSection(key) && !key.equals("prefix")) {
+                String message = messagesConfig.getString(key);
+                // Replace {prefix} placeholder with actual prefix
+                message = message.replace("{prefix}", prefix);
+                cachedMessages.put(key, colorize(message));
             }
         }
     }
