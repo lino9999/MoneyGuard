@@ -1,14 +1,9 @@
 package com.Lino.moneyGuard.managers;
 
 import com.Lino.moneyGuard.MoneyGuard;
-import com.Lino.moneyGuard.data.PlayerData;
-import org.bukkit.BanList;
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
-
-import java.util.Date;
-import java.util.UUID;
 
 public class ActionManager {
 
@@ -18,43 +13,31 @@ public class ActionManager {
         this.plugin = plugin;
     }
 
-    @SuppressWarnings("deprecation")
-    public void banPlayer(Player player, String reason) {
-        PlayerData data = plugin.getDataManager().getPlayerData(player.getUniqueId());
-        long duration = plugin.getConfigManager().getBanDuration() * 60000L;
+    public void removeSuspiciousMoney(Player player, double amount) {
+        if (!plugin.getConfigManager().isAutoRemoveMoney()) {
+            return;
+        }
 
-        data.ban(duration);
+        double currentBalance = plugin.getEconomy().getBalance(player);
+        double newBalance = Math.max(0, currentBalance - amount);
 
-        Date expiry = new Date(System.currentTimeMillis() + duration);
-        String banMessage = plugin.getMessageManager().getMessage("ban.message",
-                "{reason}", reason,
-                "{duration}", String.valueOf(plugin.getConfigManager().getBanDuration()));
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
+                String.format("eco set %s %.2f", player.getName(), newBalance));
 
-        Bukkit.getBanList(BanList.Type.NAME).addBan(
-                player.getName(),
-                banMessage,
-                expiry,
-                "MoneyGuard"
-        );
+        String message = plugin.getMessageManager().getMessage("actions.money-removed",
+                "{player}", player.getName(),
+                "{amount}", String.format("%.2f", amount));
 
-        player.kickPlayer(banMessage);
-        plugin.getLogManager().logBan(player, reason, duration);
-    }
-
-    @SuppressWarnings("deprecation")
-    public void unbanPlayer(String playerName) {
-        Bukkit.getBanList(BanList.Type.NAME).pardon(playerName);
-
-        Player player = Bukkit.getPlayer(playerName);
-        if (player != null) {
-            PlayerData data = plugin.getDataManager().getPlayerData(player.getUniqueId());
-            data.unban();
-        } else {
-            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(playerName);
-            if (offlinePlayer.hasPlayedBefore()) {
-                PlayerData data = plugin.getDataManager().getPlayerData(offlinePlayer.getUniqueId());
-                data.unban();
+        for (Player admin : Bukkit.getOnlinePlayers()) {
+            if (admin.hasPermission("moneyguard.alerts")) {
+                admin.sendMessage(message);
+                admin.playSound(admin.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
             }
         }
+
+        Bukkit.getConsoleSender().sendMessage(message);
+
+        plugin.getLogManager().logMoneyRemoval(player, amount);
+        plugin.getStatsManager().addMoneyRemoved(amount);
     }
 }

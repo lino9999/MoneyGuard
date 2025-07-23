@@ -49,27 +49,14 @@ public class LogManager {
         writeToLog(entry);
     }
 
-    public void logWarning(Player player, String reason, int totalWarnings) {
+    public void logMoneyRemoval(Player player, double amount) {
         if (!plugin.getConfigManager().isLogToFile()) return;
 
-        String entry = String.format("[%s] WARNING | Player: %s | Reason: %s | Total Warnings: %d",
-                dateFormat.format(new Date()),
-                player.getName(),
-                reason,
-                totalWarnings);
-
-        writeToLog(entry);
-    }
-
-    public void logBan(Player player, String reason, long duration) {
-        if (!plugin.getConfigManager().isLogToFile()) return;
-
-        String entry = String.format("[%s] BAN | Player: %s | UUID: %s | Reason: %s | Duration: %d minutes",
+        String entry = String.format("[%s] MONEY_REMOVED | Player: %s | UUID: %s | Amount: %.2f | Reason: Suspicious money gain",
                 dateFormat.format(new Date()),
                 player.getName(),
                 player.getUniqueId().toString(),
-                reason,
-                duration / 60000);
+                amount);
 
         writeToLog(entry);
     }

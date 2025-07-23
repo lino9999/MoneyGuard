@@ -32,6 +32,7 @@ public class AlertManager {
 
         notifyAdmins(message, Sound.BLOCK_BELL_RESONATE);
         plugin.getLogManager().logTransaction(player, amount, type, "SUSPICIOUS");
+        plugin.getStatsManager().incrementSuspiciousTransactions();
         alertedPlayers.add(player.getUniqueId());
     }
 
@@ -47,6 +48,9 @@ public class AlertManager {
 
         notifyAdmins(message, Sound.ENTITY_VILLAGER_NO);
         plugin.getLogManager().logTransaction(player, gained, Transaction.Type.GAIN, "EXCEEDED_MINUTE_LIMIT");
+
+        plugin.getActionManager().removeSuspiciousMoney(player, gained);
+
         alertedPlayers.add(player.getUniqueId());
     }
 

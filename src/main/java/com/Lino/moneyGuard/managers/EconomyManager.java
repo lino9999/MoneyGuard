@@ -46,6 +46,7 @@ public class EconomyManager {
         if (amount > plugin.getConfigManager().getSuspiciousTransactionAmount() &&
                 !alertedSuspiciousTransactions.contains(uuid)) {
             plugin.getAlertManager().alertSuspiciousTransaction(player, amount, type);
+            plugin.getActionManager().removeSuspiciousMoney(player, amount);
             alertedSuspiciousTransactions.add(uuid);
         }
     }
@@ -64,6 +65,7 @@ public class EconomyManager {
         }
 
         lastBalances.put(uuid, currentBalance);
+        plugin.getStatsManager().incrementPlayersChecked();
     }
 
     public double getMoneyGainedInLastMinute(UUID uuid) {

@@ -4,17 +4,17 @@ main: com.Lino.moneyGuard.MoneyGuard
 api-version: '1.21'
 author: Lino
 description: Advanced economy monitoring and protection plugin
-depend: [Vault]
+depend: [Vault, Essentials]
 
 commands:
   moneyguard:
     description: Main MoneyGuard command
-    usage: /<command> [reload|check|ban|unban|help]
+    usage: /<command> [reload|check|stats|help]
     permission: moneyguard.use
     aliases: [mg]
   mg:
     description: MoneyGuard alias
-    usage: /<command> [reload|check|ban|unban|help]
+    usage: /<command> [reload|check|stats|help]
     permission: moneyguard.use
 
 permissions:
@@ -28,7 +28,7 @@ permissions:
       moneyguard.use: true
       moneyguard.reload: true
       moneyguard.check: true
-      moneyguard.ban: true
+      moneyguard.stats: true
       moneyguard.alerts: true
   moneyguard.reload:
     description: Reload the plugin configuration
@@ -36,8 +36,8 @@ permissions:
   moneyguard.check:
     description: Check player money statistics
     default: op
-  moneyguard.ban:
-    description: Ban and unban players
+  moneyguard.stats:
+    description: View global statistics
     default: op
   moneyguard.alerts:
     description: Receive economy alerts
@@ -45,9 +45,3 @@ permissions:
   moneyguard.bypass:
     description: Bypass all economy checks
     default: false
-  moneyguard.warn:
-    description: Warn players for violations
-    default: op
-  moneyguard.reset:
-    description: Reset player warnings
-    default: op

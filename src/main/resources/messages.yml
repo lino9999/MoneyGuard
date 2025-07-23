@@ -1,41 +1,30 @@
-# MoneyGuard Messages Configuration
-
 prefix: "&6[MoneyGuard] &r"
 
 alerts:
   suspicious-transaction: "{prefix}&c&lSUSPICIOUS! &e{player} &7received &a${amount} &7({type})"
   max-money-minute: "{prefix}&c{player} &7has gained &e${gained} &7in the last minute (Limit: &e${limit}&7)"
 
+actions:
+  money-removed: "{prefix}&c&lMONEY REMOVED! &e{player} &7had &c${amount} &7removed for suspicious activity"
+
 reports:
   header: "&6========== &e5 Minute Suspicious Report &6=========="
   player-entry: "&e{player}: &7{count} transactions totaling &a${total}"
   footer: "&6============================================"
 
-warnings:
-  player-warning: "{prefix}&cWarning! &7You have been warned for: &e{reason} &7(Warnings: &c{warnings}/{max}&7)"
-
-ban:
-  message: "&cYou have been temporarily banned by MoneyGuard\n&7Reason: &e{reason}\n&7Duration: &e{duration} minutes"
-
 commands:
   reload-success: "{prefix}&aConfiguration reloaded successfully!"
   check-usage: "{prefix}&7Usage: &e/mg check <player>"
-  ban-usage: "{prefix}&7Usage: &e/mg ban <player> <reason>"
-  unban-usage: "{prefix}&7Usage: &e/mg unban <player>"
-  ban-success: "{prefix}&aBanned &e{player}"
-  unban-success: "{prefix}&aUnbanned &e{player}"
 
 errors:
   no-permission: "{prefix}&cYou don't have permission to use this command!"
   player-not-found: "{prefix}&cPlayer not found!"
-  player-offline: "{prefix}&cThat player is offline!"
 
 help:
   header: "&6========== &eMoneyGuard Help &6=========="
   reload: "&e/mg reload &7- Reload the configuration"
   check: "&e/mg check <player> &7- Check player statistics"
-  ban: "&e/mg ban <player> <reason> &7- Ban a player"
-  unban: "&e/mg unban <player> &7- Unban a player"
+  stats: "&e/mg stats &7- View global statistics"
   help: "&e/mg help &7- Show this help message"
 
 info:
@@ -44,5 +33,9 @@ info:
   gained-minute: "&7Gained (1 min): &e${amount}"
   gained-5min: "&7Gained (5 min): &e${amount}"
 
-admin:
-  pending-warnings: "{prefix}&e{count} players have active warnings"
+stats:
+  header: "&6========== &eMoneyGuard Statistics &6=========="
+  money-removed: "&7Total Money Removed: &c${amount}"
+  suspicious-transactions: "&7Suspicious Transactions: &e{count}"
+  players-checked: "&7Players Checked: &a{count}"
+  footer: "&6==========================================="

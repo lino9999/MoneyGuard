@@ -1,22 +1,13 @@
-# MoneyGuard Configuration
-
 limits:
-  # Maximum money a player can earn per minute
   max-money-per-minute: 1000000.0
-
-  # Transaction amount that triggers a suspicious alert
   suspicious-transaction: 50000000.0
 
 monitoring:
-  # Check interval in seconds
   check-interval-seconds: 10
-
-  # Number of players to scan per check
   players-per-scan: 3
 
-  # Ban duration in minutes
-  ban-duration-minutes: 1440
+actions:
+  auto-remove-money: true
 
 logging:
-  # Enable file logging
   log-to-file: true

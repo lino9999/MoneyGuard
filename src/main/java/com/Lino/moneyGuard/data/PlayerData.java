@@ -6,14 +6,10 @@ public class PlayerData {
 
     private final UUID uuid;
     private final List<Transaction> transactions;
-    private boolean isBanned;
-    private long banExpiry;
 
     public PlayerData(UUID uuid) {
         this.uuid = uuid;
         this.transactions = new ArrayList<>();
-        this.isBanned = false;
-        this.banExpiry = 0;
     }
 
     public void addTransaction(Transaction transaction) {
@@ -28,24 +24,6 @@ public class PlayerData {
         }
     }
 
-    public void ban(long duration) {
-        isBanned = true;
-        banExpiry = System.currentTimeMillis() + duration;
-    }
-
-    public void unban() {
-        isBanned = false;
-        banExpiry = 0;
-    }
-
-    public boolean checkBanExpiry() {
-        if (isBanned && System.currentTimeMillis() > banExpiry) {
-            unban();
-            return true;
-        }
-        return false;
-    }
-
     public void clearTransactions() {
         transactions.clear();
     }
@@ -56,14 +34,6 @@ public class PlayerData {
 
     public List<Transaction> getTransactions() {
         return new ArrayList<>(transactions);
-    }
-
-    public boolean isBanned() {
-        return isBanned;
-    }
-
-    public long getBanExpiry() {
-        return banExpiry;
     }
 
     public double getMoneyGainedLast5Minutes() {

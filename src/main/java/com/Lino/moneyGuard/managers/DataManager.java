@@ -18,11 +18,9 @@ public class DataManager {
     }
 
     public void loadData() {
-
     }
 
     public void saveAllData() {
-
     }
 
     public PlayerData getPlayerData(UUID uuid) {

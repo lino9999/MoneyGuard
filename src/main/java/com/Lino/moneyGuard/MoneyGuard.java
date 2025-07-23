@@ -20,6 +20,7 @@ public class MoneyGuard extends JavaPlugin {
     private AlertManager alertManager;
     private ActionManager actionManager;
     private LogManager logManager;
+    private StatsManager statsManager;
 
     @Override
     public void onEnable() {
@@ -41,8 +42,8 @@ public class MoneyGuard extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        if (dataManager != null) {
-            dataManager.saveAllData();
+        if (statsManager != null) {
+            statsManager.saveStats();
         }
         getLogger().info("MoneyGuard has been disabled!");
     }
@@ -67,6 +68,7 @@ public class MoneyGuard extends JavaPlugin {
         alertManager = new AlertManager(this);
         actionManager = new ActionManager(this);
         logManager = new LogManager(this);
+        statsManager = new StatsManager(this);
 
         configManager.loadConfig();
         messageManager.loadMessages();
@@ -94,8 +96,7 @@ public class MoneyGuard extends JavaPlugin {
     public void reload() {
         configManager.loadConfig();
         messageManager.loadMessages();
-        dataManager.saveAllData();
-        dataManager.loadData();
+        statsManager.saveStats();
     }
 
     public static MoneyGuard getInstance() {
@@ -132,5 +133,9 @@ public class MoneyGuard extends JavaPlugin {
 
     public LogManager getLogManager() {
         return logManager;
+    }
+
+    public StatsManager getStatsManager() {
+        return statsManager;
     }
 }

@@ -1,7 +1,6 @@
 package com.Lino.moneyGuard.listeners;
 
 import com.Lino.moneyGuard.MoneyGuard;
-import com.Lino.moneyGuard.data.PlayerData;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -19,12 +18,6 @@ public class PlayerJoinListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        PlayerData data = plugin.getDataManager().getPlayerData(player.getUniqueId());
-
-        if (data.checkBanExpiry()) {
-            plugin.getDataManager().saveAllData();
-        }
-
         plugin.getEconomyManager().checkBalanceChange(player);
     }
 }
